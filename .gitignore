@@ -1,0 +1,49 @@
+# ============================================================
+# Python
+# ============================================================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg
+*.egg-info/
+.env
+.venv
+env/
+venv/
+
+# ============================================================
+# Large ML Model Files (exceed GitHub's 100MB limit)
+# Re-generate with: python generate_data.py && python train_model.py
+# ============================================================
+*.pkl
+*.safetensors
+industry_classifier_bert/model.safetensors
+
+# ============================================================
+# Large Dataset Files
+# Re-generate with: python generate_data.py
+# ============================================================
+synthetic_contacts.csv
+
+# ============================================================
+# Compiled model artifacts (safe to regenerate)
+# ============================================================
+*.joblib
+
+# ============================================================
+# Frontend build output
+# ============================================================
+frontend/node_modules/
+frontend/dist/
+
+# ============================================================
+# OS & Editor
+# ============================================================
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.suo
+*.sln
