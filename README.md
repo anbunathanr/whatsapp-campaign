@@ -77,6 +77,16 @@ python generate_data.py
 # Train and select the best model (RandomForest, LogisticRegression, XGBoost)
 python train_model.py
 ```
+## 🚫 .gitignore — Excluded Files
+
+Two large files are excluded from the repository and must be regenerated locally after cloning:
+
+| Excluded File | Reason | How to Regenerate |
+|---|---|---|
+| `industry_classifier_model_v2.pkl` | Trained ML model — exceeds GitHub's 100 MB limit | `python train_model.py` |
+| `synthetic_contacts.csv` | 50,000-row synthetic dataset | `python generate_data.py` |
+
+> Run `generate_data.py` first, then `train_model.py`.
 
 ### 3. Start the Backend API
 
