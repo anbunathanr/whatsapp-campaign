@@ -1,0 +1,100 @@
+2026-05-10 13:59:25 [ERROR]: message.service: sendMessage failed for +15551234567 — Rate limit exceeded
+2026-05-10 13:59:25 [ERROR]: twilio.service: Failed to send message to whatsapp:+15550000000 — code: INVALID_PHONE_NUMBER, twilioCode: 21211, error: Invalid To number
+2026-05-10 13:59:25 [ERROR]: twilio.service: Failed to send message to whatsapp:+15550000000 — code: INVALID_PHONE_NUMBER, twilioCode: 21614, error: Not a mobile number
+2026-05-10 13:59:25 [ERROR]: twilio.service: Failed to send message to whatsapp:+15551234567 — code: RATE_LIMITED, twilioCode: undefined, error: Too many requests
+2026-05-10 13:59:25 [ERROR]: twilio.service: Failed to send message to whatsapp:+15551234567 — code: RATE_LIMITED, twilioCode: 20429, error: Rate limit
+2026-05-10 13:59:25 [ERROR]: twilio.service: Failed to send message to whatsapp:+15551234567 — code: AUTH_ERROR, twilioCode: 20003, error: Authenticate
+2026-05-10 13:59:25 [ERROR]: twilio.service: Failed to send message to whatsapp:+15551234567 — code: NETWORK_ERROR, twilioCode: ECONNREFUSED, error: connect ECONNREFUSED
+2026-05-10 13:59:25 [ERROR]: twilio.service: Failed to send message to whatsapp:+15551234567 — code: NETWORK_ERROR, twilioCode: ETIMEDOUT, error: connection timed out
+2026-05-10 13:59:25 [ERROR]: twilio.service: Failed to send message to whatsapp:+15551234567 — code: SEND_FAILED, twilioCode: 99999, error: Something went wrong
+2026-05-10 13:59:26 [ERROR]: Message queue error:
+Error: connect ECONNREFUSED 127.0.0.1:6379
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1705:16)
+2026-05-10 13:59:26 [ERROR]: Message queue error:
+Error: connect ECONNREFUSED 127.0.0.1:6379
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1705:16)
+2026-05-10 13:59:26 [ERROR]: Message queue error:
+Error: connect ECONNREFUSED 127.0.0.1:6379
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1705:16)
+2026-05-10 13:59:26 [ERROR]: Message queue error:
+Error: connect ECONNREFUSED 127.0.0.1:6379
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1705:16)
+2026-05-10 13:59:26 [ERROR]: Message queue error:
+Error: connect ECONNREFUSED 127.0.0.1:6379
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1705:16)
+2026-05-10 13:59:26 [ERROR]: Message queue error:
+Error: connect ECONNREFUSED 127.0.0.1:6379
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1705:16)
+2026-05-10 13:59:26 [ERROR]: Message queue error:
+Error: connect ECONNREFUSED 127.0.0.1:6379
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1705:16)
+2026-05-10 13:59:26 [ERROR]: Message queue error:
+Error: connect ECONNREFUSED 127.0.0.1:6379
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1705:16)
+2026-05-10 13:59:26 [ERROR]: Message queue error:
+Error: connect ECONNREFUSED 127.0.0.1:6379
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1705:16)
+2026-05-10 13:59:26 [ERROR]: Message queue error:
+Error: connect ECONNREFUSED 127.0.0.1:6379
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1705:16)
+2026-05-10 13:59:26 [ERROR]: Message queue error:
+Error: connect ECONNREFUSED 127.0.0.1:6379
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1705:16)
+2026-05-10 13:59:26 [ERROR]: Message queue error:
+Error: connect ECONNREFUSED 127.0.0.1:6379
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1705:16)
+2026-05-10 13:59:27 [ERROR]: Message queue error:
+Error: connect ECONNREFUSED 127.0.0.1:6379
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1705:16)
+2026-05-10 13:59:27 [ERROR]: Message queue error:
+Error: connect ECONNREFUSED 127.0.0.1:6379
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1705:16)
+2026-05-10 13:59:28 [ERROR]: Message queue error:
+Error: connect ECONNREFUSED 127.0.0.1:6379
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1705:16)
+2026-05-10 13:59:28 [ERROR]: Message queue error:
+Error: connect ECONNREFUSED 127.0.0.1:6379
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1705:16)
+2026-05-10 13:59:31 [ERROR]: Message queue error:
+Error: connect ECONNREFUSED 127.0.0.1:6379
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1705:16)
+2026-05-10 13:59:31 [ERROR]: Message queue error:
+Error: connect ECONNREFUSED 127.0.0.1:6379
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1705:16)
+2026-05-10 13:59:39 [ERROR]: Message queue error:
+Error: connect ECONNREFUSED 127.0.0.1:6379
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1705:16)
+2026-05-10 13:59:39 [ERROR]: Message queue error:
+Error: connect ECONNREFUSED 127.0.0.1:6379
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1705:16)
+2026-05-10 13:59:59 [ERROR]: Message queue error:
+Error: connect ECONNREFUSED 127.0.0.1:6379
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1705:16)
+2026-05-10 13:59:59 [ERROR]: Message queue error:
+Error: connect ECONNREFUSED 127.0.0.1:6379
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1705:16)
+2026-05-10 14:02:52 [ERROR]: message.service: sendMessage failed for +15551234567 — Rate limit exceeded
+2026-05-10 14:02:52 [ERROR]: twilio.service: Failed to send message to whatsapp:+15550000000 — code: INVALID_PHONE_NUMBER, twilioCode: 21211, error: Invalid To number
+2026-05-10 14:02:52 [ERROR]: twilio.service: Failed to send message to whatsapp:+15550000000 — code: INVALID_PHONE_NUMBER, twilioCode: 21614, error: Not a mobile number
+2026-05-10 14:02:52 [ERROR]: twilio.service: Failed to send message to whatsapp:+15551234567 — code: RATE_LIMITED, twilioCode: undefined, error: Too many requests
+2026-05-10 14:02:52 [ERROR]: twilio.service: Failed to send message to whatsapp:+15551234567 — code: RATE_LIMITED, twilioCode: 20429, error: Rate limit
+2026-05-10 14:02:52 [ERROR]: twilio.service: Failed to send message to whatsapp:+15551234567 — code: AUTH_ERROR, twilioCode: 20003, error: Authenticate
+2026-05-10 14:02:52 [ERROR]: twilio.service: Failed to send message to whatsapp:+15551234567 — code: NETWORK_ERROR, twilioCode: ECONNREFUSED, error: connect ECONNREFUSED
+2026-05-10 14:02:52 [ERROR]: twilio.service: Failed to send message to whatsapp:+15551234567 — code: NETWORK_ERROR, twilioCode: ETIMEDOUT, error: connection timed out
+2026-05-10 14:02:52 [ERROR]: twilio.service: Failed to send message to whatsapp:+15551234567 — code: SEND_FAILED, twilioCode: 99999, error: Something went wrong
+2026-05-10 14:07:58 [ERROR]: message.service: sendMessage failed for +15551234567 — Rate limit exceeded
+2026-05-10 14:07:58 [ERROR]: message.service: sendAndUpdateMessage failed for +15551234567 — code: RATE_LIMITED, error: Rate limit exceeded
+2026-05-10 14:07:58 [ERROR]: message.service: sendAndUpdateMessage failed for +15551234567 — code: SEND_FAILED, error: Something went wrong
+2026-05-10 14:07:58 [ERROR]: message.service: sendAndUpdateMessage failed for +15551234567 — code: SEND_FAILED, error: Something went wrong
+2026-05-10 14:07:58 [ERROR]: message.service: sendAndUpdateMessage failed for +15551234567 — code: SEND_FAILED, error: Something went wrong
+2026-05-10 14:07:58 [ERROR]: message.service: sendAndUpdateMessage failed for +15551234567 — code: SEND_FAILED, error: Something went wrong
+2026-05-10 14:07:58 [ERROR]: message.service: sendAndUpdateMessage failed for +15551234567 — code: SEND_FAILED, error: Something went wrong
+2026-05-10 14:07:58 [ERROR]: message.service: sendAndUpdateMessage failed for +15551234567 — code: RATE_LIMITED, error: Rate limit exceeded
+2026-05-10 14:10:25 [ERROR]: message.service: sendMessage failed for +15551234567 — Rate limit exceeded
+2026-05-10 14:10:25 [ERROR]: message.service: sendAndUpdateMessage failed for +15551234567 — code: RATE_LIMITED, error: Rate limit exceeded
+2026-05-10 14:10:25 [ERROR]: message.service: sendAndUpdateMessage failed for +15551234567 — code: SEND_FAILED, error: Something went wrong
+2026-05-10 14:10:25 [ERROR]: message.service: sendAndUpdateMessage failed for +15551234567 — code: SEND_FAILED, error: Something went wrong
+2026-05-10 14:10:25 [ERROR]: message.service: sendAndUpdateMessage failed for +15551234567 — code: SEND_FAILED, error: Something went wrong
+2026-05-10 14:10:25 [ERROR]: message.service: sendAndUpdateMessage failed for +15551234567 — code: SEND_FAILED, error: Something went wrong
+2026-05-10 14:10:25 [ERROR]: message.service: sendAndUpdateMessage failed for +15551234567 — code: SEND_FAILED, error: Something went wrong
+2026-05-10 14:10:25 [ERROR]: message.service: sendAndUpdateMessage failed for +15551234567 — code: RATE_LIMITED, error: Rate limit exceeded

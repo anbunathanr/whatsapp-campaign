@@ -26,7 +26,7 @@ const CSVUploadComponent = ({ onUploadSuccess, onError }) => {
         formData.append('file', file);
 
         try {
-            const response = await axios.post('http://localhost:8000/api/classify-csv', formData, {
+            const response = await axios.post('http://3.87.169.54:8000/api/classify-csv', formData, {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
             onUploadSuccess(response.data.results);

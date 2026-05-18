@@ -1,0 +1,67 @@
+2026-05-10 13:59:25 [WARN]: twilio.service: TWILIO_ACCOUNT_SID or TWILIO_AUTH_TOKEN is missing. WhatsApp message sending will be unavailable until credentials are configured.
+2026-05-10 13:59:26 [ERROR]: Message queue error:
+Error: connect ECONNREFUSED 127.0.0.1:6379
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1705:16)
+2026-05-10 13:59:26 [ERROR]: Message queue error:
+Error: connect ECONNREFUSED 127.0.0.1:6379
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1705:16)
+2026-05-10 13:59:26 [ERROR]: Message queue error:
+Error: connect ECONNREFUSED 127.0.0.1:6379
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1705:16)
+2026-05-10 13:59:26 [ERROR]: Message queue error:
+Error: connect ECONNREFUSED 127.0.0.1:6379
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1705:16)
+2026-05-10 13:59:26 [ERROR]: Message queue error:
+Error: connect ECONNREFUSED 127.0.0.1:6379
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1705:16)
+2026-05-10 13:59:26 [ERROR]: Message queue error:
+Error: connect ECONNREFUSED 127.0.0.1:6379
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1705:16)
+2026-05-10 13:59:26 [ERROR]: Message queue error:
+Error: connect ECONNREFUSED 127.0.0.1:6379
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1705:16)
+2026-05-10 13:59:26 [ERROR]: Message queue error:
+Error: connect ECONNREFUSED 127.0.0.1:6379
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1705:16)
+2026-05-10 13:59:26 [ERROR]: Message queue error:
+Error: connect ECONNREFUSED 127.0.0.1:6379
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1705:16)
+2026-05-10 13:59:26 [ERROR]: Message queue error:
+Error: connect ECONNREFUSED 127.0.0.1:6379
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1705:16)
+2026-05-10 13:59:26 [ERROR]: Message queue error:
+Error: connect ECONNREFUSED 127.0.0.1:6379
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1705:16)
+2026-05-10 13:59:26 [ERROR]: Message queue error:
+Error: connect ECONNREFUSED 127.0.0.1:6379
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1705:16)
+2026-05-10 13:59:27 [ERROR]: Message queue error:
+Error: connect ECONNREFUSED 127.0.0.1:6379
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1705:16)
+2026-05-10 13:59:27 [ERROR]: Message queue error:
+Error: connect ECONNREFUSED 127.0.0.1:6379
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1705:16)
+2026-05-10 13:59:28 [ERROR]: Message queue error:
+Error: connect ECONNREFUSED 127.0.0.1:6379
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1705:16)
+2026-05-10 13:59:28 [ERROR]: Message queue error:
+Error: connect ECONNREFUSED 127.0.0.1:6379
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1705:16)
+2026-05-10 13:59:31 [ERROR]: Message queue error:
+Error: connect ECONNREFUSED 127.0.0.1:6379
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1705:16)
+2026-05-10 13:59:31 [ERROR]: Message queue error:
+Error: connect ECONNREFUSED 127.0.0.1:6379
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1705:16)
+2026-05-10 13:59:39 [ERROR]: Message queue error:
+Error: connect ECONNREFUSED 127.0.0.1:6379
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1705:16)
+2026-05-10 13:59:39 [ERROR]: Message queue error:
+Error: connect ECONNREFUSED 127.0.0.1:6379
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1705:16)
+2026-05-10 13:59:59 [ERROR]: Message queue error:
+Error: connect ECONNREFUSED 127.0.0.1:6379
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1705:16)
+2026-05-10 13:59:59 [ERROR]: Message queue error:
+Error: connect ECONNREFUSED 127.0.0.1:6379
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1705:16)

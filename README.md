@@ -20,9 +20,11 @@ An intelligent contact segmentation platform that uses Machine Learning to class
 | Layer | Technology |
 |---|---|
 | **Backend** | Python 3.10+, FastAPI, Uvicorn |
+| **Node Backend** | Node.js, Express, MongoDB, Redis, BullMQ |
 | **ML Pipeline** | scikit-learn, XGBoost, TF-IDF Vectorizer |
 | **OCR** | Tesseract OCR via `pytesseract` |
 | **Frontend** | React 19, Vite, Tailwind CSS v4, Framer Motion, Axios |
+| **WhatsApp API** | Twilio WhatsApp Business API |
 | **Data Generation** | Faker, Pandas, NumPy |
 
 ---
@@ -106,6 +108,74 @@ npm run dev
 ```
 
 The frontend will be available at **http://localhost:5173**
+
+---
+
+## 📱 Twilio WhatsApp Setup
+
+This platform uses **Twilio** to send WhatsApp messages. Follow the steps below to get your free credentials.
+
+### 🔗 Quick Links
+
+| Resource | URL |
+|---|---|
+| **Twilio Website** | https://www.twilio.com |
+| **Free Sign Up** | https://www.twilio.com/try-twilio |
+| **Twilio Console** | https://console.twilio.com |
+| **WhatsApp Sandbox** | https://console.twilio.com/us1/develop/sms/try-it-out/whatsapp-learn |
+
+### Step 1 — Create a Free Twilio Account
+
+1. Visit **https://www.twilio.com/try-twilio**
+2. Fill in your name, email, and create a password
+3. No credit card required for the free trial
+4. Verify your email address to activate the account
+
+### Step 2 — Verify Your Phone Number
+
+During sign-up, Twilio asks for a real phone number to verify. This number will be the first one allowed to receive messages from the sandbox.
+
+### Step 3 — Retrieve Your Account SID & Auth Token
+
+1. Log in to the **Twilio Console** at https://console.twilio.com
+2. On the **Account Info** section of the Dashboard homepage, you will find:
+   - **Account SID** — starts with `AC...`
+   - **Auth Token** — click the eye icon to reveal it
+3. Copy both values
+
+### Step 4 — Enable the WhatsApp Sandbox
+
+1. In the Console, go to **Messaging → Try it out → Send a WhatsApp message**
+2. Or navigate directly to: https://console.twilio.com/us1/develop/sms/try-it-out/whatsapp-learn
+3. Follow the on-screen prompt — send the displayed join code (e.g. `join <word>`) from your WhatsApp to **+1 415 523 8886**
+4. Once joined, that WhatsApp number can receive messages from the sandbox
+
+### Step 5 — Note the Sandbox Sender Number
+
+The default Twilio WhatsApp sandbox number is:
+```
+whatsapp:+14155238886
+```
+> For a production approved number, apply for a WhatsApp Business Profile inside the Twilio Console.
+
+### Step 6 — Enter Credentials in the Application
+
+1. Open the application and log in
+2. Navigate to **Settings & Integrations** (sidebar)
+3. Find the **WhatsApp Business API** section
+4. Fill in:
+   | Field | Value |
+   |---|---|
+   | **Account SID** | Your `AC...` SID from the console |
+   | **Auth Token** | Your auth token from the console |
+   | **WhatsApp Sender Number** | `whatsapp:+14155238886` (sandbox) |
+5. Click **Save Configuration**
+
+### ⚠️ Free Trial Limitations
+
+- Messages can only be sent to numbers that have **joined your sandbox** by sending the join code
+- The Twilio trial account comes with a small credit — sufficient for testing
+- To send messages to anyone without the join step, upgrade to a paid account and get an approved WhatsApp Business number
 
 ---
 

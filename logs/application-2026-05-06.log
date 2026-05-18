@@ -1,0 +1,29 @@
+2026-05-06 17:17:05 [INFO]: MongoDB connected successfully
+2026-05-06 17:17:05 [ERROR]: MongoDB connection failed (attempt 1/5): An existing index has the same name as the requested index. When index names are not specified, they are auto generated and can cause conflicts. Please refer to our documentation. Requested index: { v: 2, key: { email: 1 }, name: "email_1", background: true }, existing index: { v: 2, unique: true, key: { email: 1 }, name: "email_1", background: true }
+2026-05-06 17:17:05 [INFO]: Retrying in 5.85 seconds...
+2026-05-06 17:17:11 [INFO]: MongoDB connected successfully
+2026-05-06 17:17:11 [ERROR]: MongoDB connection failed (attempt 2/5): An existing index has the same name as the requested index. When index names are not specified, they are auto generated and can cause conflicts. Please refer to our documentation. Requested index: { v: 2, key: { email: 1 }, name: "email_1", background: true }, existing index: { v: 2, unique: true, key: { email: 1 }, name: "email_1", background: true }
+2026-05-06 17:17:11 [INFO]: Retrying in 10.83 seconds...
+2026-05-06 17:17:22 [INFO]: MongoDB connected successfully
+2026-05-06 17:17:22 [ERROR]: MongoDB connection failed (attempt 3/5): An existing index has the same name as the requested index. When index names are not specified, they are auto generated and can cause conflicts. Please refer to our documentation. Requested index: { v: 2, key: { email: 1 }, name: "email_1", background: true }, existing index: { v: 2, unique: true, key: { email: 1 }, name: "email_1", background: true }
+2026-05-06 17:17:22 [INFO]: Retrying in 20.37 seconds...
+2026-05-06 17:17:42 [INFO]: MongoDB connected successfully
+2026-05-06 17:17:42 [ERROR]: MongoDB connection failed (attempt 4/5): An existing index has the same name as the requested index. When index names are not specified, they are auto generated and can cause conflicts. Please refer to our documentation. Requested index: { v: 2, key: { email: 1 }, name: "email_1", background: true }, existing index: { v: 2, unique: true, key: { email: 1 }, name: "email_1", background: true }
+2026-05-06 17:17:42 [INFO]: Retrying in 30.35 seconds...
+2026-05-06 17:18:13 [INFO]: MongoDB connected successfully
+2026-05-06 17:18:13 [ERROR]: MongoDB connection failed (attempt 5/5): An existing index has the same name as the requested index. When index names are not specified, they are auto generated and can cause conflicts. Please refer to our documentation. Requested index: { v: 2, key: { email: 1 }, name: "email_1", background: true }, existing index: { v: 2, unique: true, key: { email: 1 }, name: "email_1", background: true }
+2026-05-06 17:39:47 [INFO]: Message enqueued: verify-test-1
+2026-05-06 17:39:47 [INFO]: Processing message job verify-test-1 for +1234567890
+2026-05-06 17:39:47 [INFO]: Message verify-test-1 queued for processing
+2026-05-06 17:39:47 [INFO]: Message job verify-test-1 completed successfully
+2026-05-06 17:39:47 [INFO]: Batch enqueued: 2 messages
+2026-05-06 17:39:47 [INFO]: Processing message job verify-batch-1 for +1111111111
+2026-05-06 17:39:47 [INFO]: Message verify-batch-1 queued for processing
+2026-05-06 17:39:47 [INFO]: Message job verify-batch-1 completed successfully
+2026-05-06 17:39:47 [INFO]: Processing message job verify-batch-2 for +2222222222
+2026-05-06 17:39:47 [INFO]: Message verify-batch-2 queued for processing
+2026-05-06 17:39:47 [INFO]: Message job verify-batch-2 completed successfully
+2026-05-06 17:39:47 [INFO]: Message queue paused
+2026-05-06 17:39:47 [INFO]: Message queue resumed
+2026-05-06 17:39:47 [INFO]: Queue cleaned: removed jobs older than 1000ms
+2026-05-06 17:39:47 [INFO]: Message queue connection closed

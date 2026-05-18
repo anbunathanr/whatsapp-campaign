@@ -24,7 +24,7 @@ const PosterUploadComponent = ({ onAnalyzeSuccess, onError }) => {
     formData.append('file', file);
 
     try {
-      const response = await fetch('http://localhost:8000/api/analyze-campaign', {
+      const response = await fetch('http://3.87.169.54:8000/api/analyze-campaign', {
         method: 'POST',
         body: formData,
       });

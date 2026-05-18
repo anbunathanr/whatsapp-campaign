@@ -1,0 +1,63 @@
+version: '3.8'
+
+services:
+  # MongoDB Database
+  mongodb:
+    image: mongo:6
+    container_name: whatsapp-campaign-mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    environment:
+      MONGO_INITDB_DATABASE: whatsapp_campaign_platform
+    networks:
+      - whatsapp-campaign-network
+
+  # Redis Cache & Queue
+  redis:
+    image: redis:7-alpine
+    container_name: whatsapp-campaign-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    networks:
+      - whatsapp-campaign-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+  # Node.js Backend (optional - for full stack deployment)
+  # backend:
+  #   build:
+  #     context: ./node-backend
+  #     dockerfile: Dockerfile
+  #   container_name: whatsapp-campaign-backend
+  #   restart: unless-stopped
+  #   ports:
+  #     - "5000:5000"
+  #   environment:
+  #     NODE_ENV: production
+  #     MONGODB_URI: mongodb://mongodb:27017/whatsapp_campaign_platform
+  #     REDIS_URL: redis://redis:6379
+  #   depends_on:
+  #     - mongodb
+  #     - redis
+  #   networks:
+  #     - whatsapp-campaign-network
+
+volumes:
+  mongodb_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  whatsapp-campaign-network:
+    driver: bridge

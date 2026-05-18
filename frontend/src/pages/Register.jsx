@@ -1,0 +1,42 @@
+import RegisterForm from '../components/auth/RegisterForm';
+
+const Register = () => {
+  return (
+    <div className="min-h-screen bg-slate-900 flex items-center justify-center px-4 py-10">
+      <div className="w-full max-w-md">
+        {/* Card */}
+        <div className="bg-slate-800 rounded-2xl border border-slate-700 p-8 shadow-xl">
+          {/* Header */}
+          <div className="mb-8 text-center">
+            {/* Logo */}
+            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-600">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                className="h-6 w-6 text-white"
+                aria-hidden="true"
+              >
+                <path d="M2.25 12.76c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.076-4.076a1.526 1.526 0 0 1 1.037-.443 48.282 48.282 0 0 0 5.68-.494c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" />
+              </svg>
+            </div>
+            <h1 className="text-2xl font-bold text-white">Create account</h1>
+            <p className="mt-1 text-sm text-slate-400">
+              Join WhatsApp Campaigns and start automating
+            </p>
+          </div>
+
+          {/* Form */}
+          <RegisterForm />
+        </div>
+
+        {/* Footer note */}
+        <p className="mt-6 text-center text-xs text-slate-500">
+          Protected by HTTPS. Your credentials are encrypted in transit.
+        </p>
+      </div>
+    </div>
+  );
+};
+
+export default Register;
