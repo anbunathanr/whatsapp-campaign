@@ -1,0 +1,21 @@
+# Dependencies — installed inside the image
+node_modules/
+
+# Development environment
+.env
+.env.*
+!.env.example
+
+# Git
+.git/
+.gitignore
+
+# Editor/OS
+.DS_Store
+.vscode/
+*.swp
+
+# Built output (built inside the image from source)
+dist/
+
+# Nginx config is copied explicitly in the Dockerfile

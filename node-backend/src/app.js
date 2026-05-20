@@ -17,6 +17,32 @@ const routes = require('./routes');
 
 const app = express();
 
+// ─── Trust Proxy (AWS ALB / ELB) ─────────────────────────────────────────────
+// Ensures Express reads the real client IP from X-Forwarded-For instead of
+// the ALB's internal IP. Required for rate limiting to work correctly on AWS.
+app.set('trust proxy', 1);
+
+// ─── Production Env-Var Validation ───────────────────────────────────────────
+// Crash early in production if any critical variable is missing.
+if (config.env === 'production') {
+  const REQUIRED_ENV_VARS = [
+    'MONGODB_URI',
+    'REDIS_URL',
+    'JWT_SECRET',
+    'JWT_REFRESH_SECRET',
+    'ALLOWED_ORIGINS',
+  ];
+  const missing = REQUIRED_ENV_VARS.filter((v) => !process.env[v]);
+  if (missing.length > 0) {
+    // eslint-disable-next-line no-console
+    console.error(
+      `[FATAL] Missing required environment variables in production: ${missing.join(', ')}\n` +
+        'Set them in your ECS task definition or Elastic Beanstalk configuration.'
+    );
+    process.exit(1);
+  }
+}
+
 // ─── Security Headers ────────────────────────────────────────────────────────
 app.use(helmet());
 

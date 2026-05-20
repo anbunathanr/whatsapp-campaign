@@ -1,6 +1,7 @@
+const fs = require('fs');
+const path = require('path');
 const winston = require('winston');
 const DailyRotateFile = require('winston-daily-rotate-file');
-const path = require('path');
 const config = require('../config');
 
 // Define log format
@@ -16,32 +17,42 @@ const logFormat = winston.format.combine(
   })
 );
 
-// Create transports
-const transports = [
-  // Console transport
-  new winston.transports.Console({
-    format: winston.format.combine(winston.format.colorize(), logFormat),
-  }),
+const consoleTransport = new winston.transports.Console({
+  format: winston.format.combine(winston.format.colorize(), logFormat),
+});
 
-  // Daily rotate file for all logs
-  new DailyRotateFile({
-    filename: path.join(config.logging.dir, 'application-%DATE%.log'),
-    datePattern: 'YYYY-MM-DD',
-    maxSize: '20m',
-    maxFiles: '14d',
-    format: logFormat,
-  }),
+// In production (AWS ECS / containerised environments), stdout is forwarded to
+// CloudWatch Logs — file transports are unreliable on ephemeral container disks.
+// Use file transports only in non-production environments.
+const transports = [consoleTransport];
 
-  // Daily rotate file for errors only
-  new DailyRotateFile({
-    filename: path.join(config.logging.dir, 'error-%DATE%.log'),
-    datePattern: 'YYYY-MM-DD',
-    level: 'error',
-    maxSize: '20m',
-    maxFiles: '30d',
-    format: logFormat,
-  }),
-];
+if (config.env !== 'production') {
+  try {
+    const logDir = path.resolve(config.logging.dir);
+    fs.mkdirSync(logDir, { recursive: true });
+
+    transports.push(
+      new DailyRotateFile({
+        filename: path.join(logDir, 'application-%DATE%.log'),
+        datePattern: 'YYYY-MM-DD',
+        maxSize: '20m',
+        maxFiles: '14d',
+        format: logFormat,
+      }),
+      new DailyRotateFile({
+        filename: path.join(logDir, 'error-%DATE%.log'),
+        datePattern: 'YYYY-MM-DD',
+        level: 'error',
+        maxSize: '20m',
+        maxFiles: '30d',
+        format: logFormat,
+      })
+    );
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.warn(`[logger] Could not create log directory "${config.logging.dir}": ${err.message}. File logging disabled.`);
+  }
+}
 
 // Create logger instance
 const logger = winston.createLogger({

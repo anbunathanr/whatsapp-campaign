@@ -10,9 +10,39 @@ const { sendWhatsAppMessage } = require('../services/twilio.service');
 
 const MESSAGE_QUEUE_NAME = 'whatsapp-messages';
 
+/**
+ * Build the Redis connection options for Bull.
+ * Supports plain Redis URL and ElastiCache with AUTH + optional TLS.
+ * Passing an options object (instead of a raw URL string) avoids ioredis
+ * URL-parsing quirks with passwords that contain special characters.
+ */
+const buildRedisOptions = () => {
+  const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379';
+  try {
+    const parsed = new URL(redisUrl);
+    const opts = {
+      host: parsed.hostname,
+      port: parseInt(parsed.port, 10) || 6379,
+      db: parsed.pathname ? parseInt(parsed.pathname.replace('/', ''), 10) || 0 : 0,
+    };
+    // Support Redis AUTH password (redis://:password@host:port)
+    if (parsed.password) {
+      opts.password = decodeURIComponent(parsed.password);
+    }
+    // Enable TLS for rediss:// (AWS ElastiCache in-transit encryption)
+    if (parsed.protocol === 'rediss:') {
+      opts.tls = {};
+    }
+    return opts;
+  } catch (_) {
+    // Fallback to defaults if URL parsing fails
+    return { host: 'localhost', port: 6379 };
+  }
+};
+
 // Create Bull queue backed by Redis
 const messageQueue = new Bull(MESSAGE_QUEUE_NAME, {
-  redis: config.redis.url,
+  redis: buildRedisOptions(),
   defaultJobOptions: {
     attempts: 3,
     backoff: {

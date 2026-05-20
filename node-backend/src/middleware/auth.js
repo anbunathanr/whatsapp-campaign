@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken');
 const config = require('../config');
 const { sendError } = require('../utils/apiResponse');
 const User = require('../models/User');
+const logger = require('../utils/logger');
 
 /**
  * Middleware: verify JWT token, fetch the full user from the database,
@@ -16,10 +17,10 @@ const User = require('../models/User');
  */
 const authenticate = async (req, res, next) => {
   const authHeader = req.headers.authorization;
-  console.log('[Auth Middleware] URL:', req.originalUrl, 'Method:', req.method);
+  logger.debug(`[Auth] ${req.method} ${req.originalUrl}`);
 
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    console.log('[Auth Middleware] Blocked! No token provided.');
+    logger.debug('[Auth] Blocked — no Bearer token provided.');
     return sendError(res, 'No token provided', 401);
   }
 

@@ -1,0 +1,36 @@
+# Dependencies — installed fresh inside the image
+node_modules/
+
+# Development environment
+.env
+.env.*
+!.env.example
+
+# Git
+.git/
+.gitignore
+
+# Logs
+logs/
+*.log
+
+# Test artifacts
+coverage/
+__tests__/
+*.test.js
+jest.config.js
+
+# Editor/OS
+.DS_Store
+.vscode/
+*.swp
+
+# Build artifacts
+dist/
+
+# Scripts (not needed at runtime)
+scripts/
+docs/
+
+# Uploads — use S3 in production, not the container filesystem
+uploads/
