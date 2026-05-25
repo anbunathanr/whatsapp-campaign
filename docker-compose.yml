@@ -47,13 +47,14 @@ services:
     container_name: whatsapp-campaign-backend
     restart: unless-stopped
     ports:
-      - "5000:5000"
+      - "8000:5000"
     env_file:
       - ./node-backend/.env
     environment:
       NODE_ENV: production
       MONGODB_URI: mongodb://mongodb:27017/whatsapp_campaign_platform
       REDIS_URL: redis://redis:6379
+      ALLOWED_ORIGINS: "http://localhost,http://localhost:80,http://localhost:5173,http://localhost:3000"
     depends_on:
       mongodb:
         condition: service_healthy
@@ -76,7 +77,7 @@ services:
       args:
         # Points the frontend bundle at the backend.
         # Change to your ALB URL for AWS deployments.
-        VITE_API_URL: http://localhost:5000/api
+        VITE_API_URL: http://localhost:8000/api
     container_name: whatsapp-campaign-frontend
     restart: unless-stopped
     ports:

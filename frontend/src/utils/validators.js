@@ -78,10 +78,6 @@ export const validateRegisterForm = (formData) => {
     errors.confirmPassword = 'Passwords do not match.';
   }
 
-  if (!formData.role) {
-    errors.role = 'Please select a role.';
-  }
-
   return errors;
 };
 
