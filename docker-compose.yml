@@ -55,10 +55,13 @@ services:
       MONGODB_URI: mongodb://mongodb:27017/whatsapp_campaign_platform
       REDIS_URL: redis://redis:6379
       ALLOWED_ORIGINS: "http://localhost,http://localhost:80,http://localhost:5173,http://localhost:3000"
+      ML_SERVICE_URL: http://ml-classifier:8000
     depends_on:
       mongodb:
         condition: service_healthy
       redis:
+        condition: service_healthy
+      ml-classifier:
         condition: service_healthy
     networks:
       - whatsapp-campaign-network
@@ -68,6 +71,25 @@ services:
       timeout: 10s
       retries: 3
       start_period: 30s
+
+  # ── Python ML Classifier ──────────────────────────────────────────────────────
+  ml-classifier:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: whatsapp-campaign-ml-classifier
+    restart: unless-stopped
+    ports:
+      - "8001:8000"
+    networks:
+      - whatsapp-campaign-network
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
 
   # ── React Frontend ────────────────────────────────────────────────────────────
   frontend:

@@ -103,7 +103,9 @@ async def analyze_campaign(file: UploadFile = File(...)):
         # Extract text using OCR
         try:
             # Add common Windows installation path to save user from PATH issues
-            pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+            import os as sys_os
+            if sys_os.name == 'nt':
+                pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
             extracted_text = pytesseract.image_to_string(image).strip()
         except Exception as ocr_err:
             raise HTTPException(status_code=500, detail=f"OCR engine error. Ensure Tesseract is installed: {str(ocr_err)}")
