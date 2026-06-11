@@ -11,24 +11,30 @@ CloudFront (HTTPS) ──── S3 (React SPA static files)
   ▼ (API calls)
 API Gateway (HTTP API)
   │
-  ▼
-Lambda (FastAPI + Mangum)
+  ├── /api/auth/*  → Auth Lambdas (register, login, verify-mfa)
+  │                     │
+  │                     ├── DynamoDB (wc-users table)
+  │                     └── Secrets Manager (opencrm/frappe-api-key)
   │
-  ├── S3 (ML model artifacts)
-  └── Tesseract Lambda Layer (OCR)
+  └── /api/*       → ML Lambda (FastAPI + Mangum)
+                        │
+                        ├── S3 (ML model artifacts)
+                        └── Tesseract Lambda Layer (OCR)
 ```
 
 **Services used:**
 | Component | AWS Service |
 |---|---|
 | React Frontend | S3 + CloudFront |
-| FastAPI Backend | Lambda + API Gateway (HTTP API) |
+| Auth (Register/Login/OTP) | Lambda + DynamoDB + Secrets Manager |
+| FastAPI ML Backend | Lambda + API Gateway (HTTP API) |
 | ML Model Storage | Amazon S3 |
 | OCR Engine | Tesseract via Lambda Layer |
-| Secrets | Lambda Environment Variables |
+| User Database | DynamoDB (`wc-users` table) |
+| CRM Integration | n8n webhook (OTP email delivery) |
 | Logs | Amazon CloudWatch (auto) |
 
-> **Fully serverless** — no EC2, no ECS, no ALB, no ElastiCache. Pay only when requests are made.
+> **Fully serverless** — no EC2, no ECS, no ALB, no ElastiCache, no Cognito. Pay only when requests are made.
 
 ---
 
@@ -199,7 +205,9 @@ Compress-Archive -Path package\* -DestinationPath lambda_function.zip -Force
 
 ---
 
-## Step 6 — Create IAM Role for Lambda
+## Step 6 — Create IAM Roles for Lambda
+
+### 6a. ML API Lambda Role (S3 access for model)
 
 ```powershell
 $TRUST_POLICY = '{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Principal":{"Service":"lambda.amazonaws.com"},"Action":"sts:AssumeRole"}]}'
@@ -215,6 +223,26 @@ aws iam attach-role-policy `
 aws iam attach-role-policy `
   --role-name $APP_NAME-lambda-role `
   --policy-arn arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess
+```
+
+### 6b. Auth Lambda Role (DynamoDB + Secrets Manager)
+
+```powershell
+aws iam create-role `
+  --role-name $APP_NAME-auth-lambda-role `
+  --assume-role-policy-document $TRUST_POLICY
+
+aws iam attach-role-policy `
+  --role-name $APP_NAME-auth-lambda-role `
+  --policy-arn arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+
+aws iam attach-role-policy `
+  --role-name $APP_NAME-auth-lambda-role `
+  --policy-arn arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess
+
+aws iam attach-role-policy `
+  --role-name $APP_NAME-auth-lambda-role `
+  --policy-arn arn:aws:iam::aws:policy/SecretsManagerReadWrite
 
 # Wait for role propagation
 Start-Sleep -Seconds 10
@@ -222,7 +250,96 @@ Start-Sleep -Seconds 10
 
 ---
 
-## Step 7 — Deploy the Lambda Function
+## Step 7 — Create DynamoDB Users Table
+
+```powershell
+aws dynamodb create-table `
+  --table-name wc-users `
+  --attribute-definitions AttributeName=email,AttributeType=S `
+  --key-schema AttributeName=email,KeyType=HASH `
+  --billing-mode PAY_PER_REQUEST `
+  --region $REGION
+
+aws dynamodb wait table-exists --table-name wc-users --region $REGION
+Write-Host "DynamoDB table 'wc-users' created."
+```
+
+---
+
+## Step 8 — Deploy Auth Lambda Functions
+
+Auth code is located in `cloud/lambda/`. These functions use:
+- **DynamoDB** for user storage
+- **AWS Secrets Manager** (`opencrm/frappe-api-key`) for n8n webhook auth
+- **n8n webhook** to send OTP emails via CRM
+
+### 8a. Package auth functions
+
+```powershell
+cd D:\shared\trial\whatsapp-campaign\cloud\lambda
+
+# Register
+Compress-Archive -Path register.py -DestinationPath register.zip -Force
+
+# Login
+Compress-Archive -Path login.py -DestinationPath login.zip -Force
+
+# Verify MFA
+Compress-Archive -Path verify_mfa.py -DestinationPath verify_mfa.zip -Force
+```
+
+### 8b. Deploy auth Lambdas
+
+```powershell
+$AUTH_ROLE_ARN = "arn:aws:iam::${ACCOUNT_ID}:role/$APP_NAME-auth-lambda-role"
+
+# Register Lambda
+aws lambda create-function `
+  --function-name $APP_NAME-register `
+  --runtime python3.11 `
+  --role $AUTH_ROLE_ARN `
+  --handler register.lambda_handler `
+  --zip-file fileb://register.zip `
+  --timeout 30 `
+  --memory-size 256 `
+  --environment "Variables={JWT_SECRET=REPLACE_WITH_SECURE_SECRET}" `
+  --region $REGION
+
+# Login Lambda
+aws lambda create-function `
+  --function-name $APP_NAME-login `
+  --runtime python3.11 `
+  --role $AUTH_ROLE_ARN `
+  --handler login.lambda_handler `
+  --zip-file fileb://login.zip `
+  --timeout 30 `
+  --memory-size 256 `
+  --environment "Variables={JWT_SECRET=REPLACE_WITH_SECURE_SECRET}" `
+  --region $REGION
+
+# Verify MFA Lambda
+aws lambda create-function `
+  --function-name $APP_NAME-verify-mfa `
+  --runtime python3.11 `
+  --role $AUTH_ROLE_ARN `
+  --handler verify_mfa.lambda_handler `
+  --zip-file fileb://verify_mfa.zip `
+  --timeout 30 `
+  --memory-size 256 `
+  --environment "Variables={JWT_SECRET=REPLACE_WITH_SECURE_SECRET}" `
+  --region $REGION
+
+Write-Host "Auth Lambdas deployed!"
+```
+
+> **Generate a strong JWT secret:**
+> ```powershell
+> python -c "import secrets; print(secrets.token_hex(32))"
+> ```
+
+---
+
+## Step 9 — Deploy the ML Lambda Function
 
 ```powershell
 $ROLE_ARN = "arn:aws:iam::${ACCOUNT_ID}:role/$APP_NAME-lambda-role"
@@ -247,51 +364,108 @@ Write-Host "Lambda deployed!"
 
 ---
 
-## Step 8 — Create API Gateway (HTTP API)
+## Step 10 — Create API Gateway (HTTP API) with Auth Routes
 
 ```powershell
-$LAMBDA_ARN = "arn:aws:lambda:${REGION}:${ACCOUNT_ID}:function:$APP_NAME-api"
-
+# Create the HTTP API
 $API_ID = (aws apigatewayv2 create-api `
   --name $APP_NAME-api `
   --protocol-type HTTP `
-  --target $LAMBDA_ARN `
+  --cors-configuration "AllowOrigins=*,AllowMethods=GET,POST,PUT,DELETE,OPTIONS,AllowHeaders=Content-Type,Authorization" `
   --query ApiId --output text)
 
 $API_URL = "https://$API_ID.execute-api.$REGION.amazonaws.com"
 Write-Host "API URL: $API_URL"
-
-# Grant API Gateway permission to invoke Lambda
-aws lambda add-permission `
-  --function-name $APP_NAME-api `
-  --statement-id apigateway-invoke `
-  --action lambda:InvokeFunction `
-  --principal apigateway.amazonaws.com `
-  --source-arn "arn:aws:execute-api:${REGION}:${ACCOUNT_ID}:${API_ID}/*"
 ```
 
-### Enable binary media types (for image/CSV uploads)
+### 10a. Create Lambda integrations
 
 ```powershell
-aws apigatewayv2 update-api `
+# ML API integration
+$ML_LAMBDA_ARN = "arn:aws:lambda:${REGION}:${ACCOUNT_ID}:function:$APP_NAME-api"
+$ML_INTEGRATION_ID = (aws apigatewayv2 create-integration `
   --api-id $API_ID `
-  --region $REGION
+  --integration-type AWS_PROXY `
+  --integration-uri $ML_LAMBDA_ARN `
+  --payload-format-version 2.0 `
+  --query IntegrationId --output text)
+
+# Register integration
+$REG_LAMBDA_ARN = "arn:aws:lambda:${REGION}:${ACCOUNT_ID}:function:$APP_NAME-register"
+$REG_INTEGRATION_ID = (aws apigatewayv2 create-integration `
+  --api-id $API_ID `
+  --integration-type AWS_PROXY `
+  --integration-uri $REG_LAMBDA_ARN `
+  --payload-format-version 2.0 `
+  --query IntegrationId --output text)
+
+# Login integration
+$LOGIN_LAMBDA_ARN = "arn:aws:lambda:${REGION}:${ACCOUNT_ID}:function:$APP_NAME-login"
+$LOGIN_INTEGRATION_ID = (aws apigatewayv2 create-integration `
+  --api-id $API_ID `
+  --integration-type AWS_PROXY `
+  --integration-uri $LOGIN_LAMBDA_ARN `
+  --payload-format-version 2.0 `
+  --query IntegrationId --output text)
+
+# Verify MFA integration
+$MFA_LAMBDA_ARN = "arn:aws:lambda:${REGION}:${ACCOUNT_ID}:function:$APP_NAME-verify-mfa"
+$MFA_INTEGRATION_ID = (aws apigatewayv2 create-integration `
+  --api-id $API_ID `
+  --integration-type AWS_PROXY `
+  --integration-uri $MFA_LAMBDA_ARN `
+  --payload-format-version 2.0 `
+  --query IntegrationId --output text)
+```
+
+### 10b. Create routes
+
+```powershell
+# Auth routes
+aws apigatewayv2 create-route --api-id $API_ID --route-key "POST /api/auth/register" --target "integrations/$REG_INTEGRATION_ID"
+aws apigatewayv2 create-route --api-id $API_ID --route-key "POST /api/auth/login" --target "integrations/$LOGIN_INTEGRATION_ID"
+aws apigatewayv2 create-route --api-id $API_ID --route-key "POST /api/auth/verify-mfa" --target "integrations/$MFA_INTEGRATION_ID"
+
+# ML API routes (catch-all for FastAPI)
+aws apigatewayv2 create-route --api-id $API_ID --route-key "GET /health" --target "integrations/$ML_INTEGRATION_ID"
+aws apigatewayv2 create-route --api-id $API_ID --route-key "POST /api/classify-contact" --target "integrations/$ML_INTEGRATION_ID"
+aws apigatewayv2 create-route --api-id $API_ID --route-key "POST /api/classify-csv" --target "integrations/$ML_INTEGRATION_ID"
+aws apigatewayv2 create-route --api-id $API_ID --route-key "POST /api/analyze-campaign" --target "integrations/$ML_INTEGRATION_ID"
+```
+
+### 10c. Create stage and grant permissions
+
+```powershell
+aws apigatewayv2 create-stage --api-id $API_ID --stage-name '$default' --auto-deploy
+
+# Grant API Gateway permission to invoke all Lambdas
+$SOURCE_ARN = "arn:aws:execute-api:${REGION}:${ACCOUNT_ID}:${API_ID}/*"
+
+aws lambda add-permission --function-name $APP_NAME-api --statement-id apigw --action lambda:InvokeFunction --principal apigateway.amazonaws.com --source-arn $SOURCE_ARN
+aws lambda add-permission --function-name $APP_NAME-register --statement-id apigw --action lambda:InvokeFunction --principal apigateway.amazonaws.com --source-arn $SOURCE_ARN
+aws lambda add-permission --function-name $APP_NAME-login --statement-id apigw --action lambda:InvokeFunction --principal apigateway.amazonaws.com --source-arn $SOURCE_ARN
+aws lambda add-permission --function-name $APP_NAME-verify-mfa --statement-id apigw --action lambda:InvokeFunction --principal apigateway.amazonaws.com --source-arn $SOURCE_ARN
 ```
 
 > In the AWS Console: API Gateway → Your API → API settings → add binary media types: `multipart/form-data`, `image/*`
 
-### Test the API
+### Test the APIs
 
 ```powershell
+# Health check
 Invoke-RestMethod "$API_URL/health"
-# Expected: { status: "healthy", model_loaded: true }
+
+# Register test
+Invoke-RestMethod -Method POST "$API_URL/api/auth/register" `
+  -ContentType "application/json" `
+  -Body '{"email":"test@example.com","password":"Test@1234","firstName":"Test","lastName":"User"}'
 ```
 
 ---
 
-## Step 9 — Deploy React Frontend to S3 + CloudFront
+## Step 11 — Deploy React Frontend to S3 + CloudFront
 
-### 9a. Build frontend with the API Gateway URL
+### 11a. Build frontend with the API Gateway URL
 
 ```powershell
 cd D:\shared\trial\whatsapp-campaign\frontend
@@ -305,7 +479,7 @@ npm run build
 
 > Make sure your React code uses `import.meta.env.VITE_API_URL` as the base URL for API calls.
 
-### 9b. Create and upload to S3
+### 11b. Create and upload to S3
 
 ```powershell
 $FRONTEND_BUCKET = "$APP_NAME-frontend-$ACCOUNT_ID"
@@ -315,7 +489,7 @@ aws s3 mb s3://$FRONTEND_BUCKET --region $REGION
 aws s3 sync dist/ s3://$FRONTEND_BUCKET --delete
 ```
 
-### 9c. Create CloudFront distribution
+### 11c. Create CloudFront distribution
 
 ```powershell
 # Create Origin Access Control
@@ -333,7 +507,7 @@ $CF_DOMAIN = "https://YOUR_DISTRIBUTION.cloudfront.net"
 Write-Host "Frontend URL: $CF_DOMAIN"
 ```
 
-### 9d. Set S3 bucket policy for CloudFront
+### 11d. Set S3 bucket policy for CloudFront
 
 ```powershell
 $DISTRIBUTION_ARN = "arn:aws:cloudfront::${ACCOUNT_ID}:distribution/YOUR_DISTRIBUTION_ID"
@@ -355,7 +529,7 @@ $POLICY | Out-File bucket-policy.json -Encoding utf8
 aws s3api put-bucket-policy --bucket $FRONTEND_BUCKET --policy file://bucket-policy.json
 ```
 
-### 9e. Configure SPA routing (handle React Router 404s)
+### 11e. Configure SPA routing (handle React Router 404s)
 
 In AWS Console → CloudFront → Distribution → Error Pages:
 - Error code `403` → Response code `200`, Response page `/index.html`
@@ -363,7 +537,7 @@ In AWS Console → CloudFront → Distribution → Error Pages:
 
 ---
 
-## Step 10 — Verify Deployment
+## Step 12 — Verify Deployment
 
 ```powershell
 # Backend
@@ -420,8 +594,10 @@ Lambda picks up the new model on the next cold start.
 |---|---|---|
 | Lambda | 1M requests + 400K GB-seconds/month | ~$0.20/1M requests |
 | API Gateway | 1M requests/month | ~$1.00/1M requests |
+| DynamoDB | 25 GB + 25 RCU/WCU | PAY_PER_REQUEST ~$1.25/1M writes |
 | S3 | 5 GB storage | ~$0.023/GB/month |
 | CloudFront | 1 TB transfer/month | ~$0.085/GB |
+| Secrets Manager | — | $0.40/secret/month |
 | CloudWatch | 5 GB logs | ~$0.50/GB |
 
 **Estimated cost for low traffic: ~$0–5/month** (mostly within free tier).
@@ -433,9 +609,25 @@ Lambda picks up the new model on the next cold start.
 The developer deploying this needs only:
 - `lambda:*` — create/update functions
 - `apigateway:*` — create HTTP API
+- `dynamodb:*` — create users table
 - `s3:*` — create buckets, upload files
 - `cloudfront:*` — create distribution
 - `iam:CreateRole`, `iam:AttachRolePolicy` — one-time role setup
 - `logs:*` — view CloudWatch logs
 
-No EC2, ECS, ALB, or ElastiCache access is required.
+No EC2, ECS, ALB, ElastiCache, or Cognito access is required.
+
+---
+
+## Auth Flow Summary
+
+```
+1. Register:  POST /api/auth/register  → creates user in DynamoDB, sends OTP via n8n
+2. Login:     POST /api/auth/login     → validates password, sends OTP via n8n
+3. Verify:    POST /api/auth/verify-mfa → validates OTP, returns JWT token
+4. All subsequent API calls include:   Authorization: Bearer <jwt-token>
+```
+
+Secret used for n8n webhook authentication:
+- ARN: `arn:aws:secretsmanager:us-east-1:976193236457:secret:opencrm/frappe-api-key-iQgSaZ`
+- Name: `opencrm/frappe-api-key`
