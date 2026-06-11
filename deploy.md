@@ -187,21 +187,41 @@ pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tessera
 pytesseract.pytesseract.tesseract_cmd = os.environ.get("TESSERACT_CMD", "/opt/bin/tesseract")
 ```
 
-### 5d. Package everything
+### 5d. Package everything (Lambda Layer approach for large ML libraries)
+
+Since scikit-learn + numpy + scipy exceed Lambda's 50 MB ZIP limit, split into:
+- **Lambda Layer** — heavy ML dependencies (~250 MB unzipped, within 250 MB layer limit)
+- **Function ZIP** — application code only (small)
 
 ```powershell
-# Install dependencies into a package folder
-pip install fastapi scikit-learn xgboost pandas numpy joblib pillow pytesseract boto3 mangum -t package/
+# --- ML Dependencies Layer ---
+mkdir ml-layer\python
+pip install scikit-learn xgboost pandas numpy joblib -t ml-layer\python\
 
-# Copy application code
-Copy-Item main.py, csv_processor.py, handler.py package/
-Copy-Item model_loader_lambda.py package/model_loader.py
+Compress-Archive -Path ml-layer\* -DestinationPath ml-deps-layer.zip -Force
 
-# Create zip
-Compress-Archive -Path package\* -DestinationPath lambda_function.zip -Force
+aws lambda publish-layer-version `
+  --layer-name $APP_NAME-ml-deps `
+  --zip-file fileb://ml-deps-layer.zip `
+  --compatible-runtimes python3.11 `
+  --region $REGION
+
+$ML_LAYER_ARN = (aws lambda list-layer-versions --layer-name $APP_NAME-ml-deps --query "LayerVersions[0].LayerVersionArn" --output text)
+Write-Host "ML Layer ARN: $ML_LAYER_ARN"
+
+# --- Function code (small zip) ---
+mkdir func-package
+pip install fastapi pillow pytesseract boto3 mangum -t func-package/
+
+Copy-Item main.py, csv_processor.py, handler.py func-package/
+Copy-Item model_loader_lambda.py func-package/model_loader.py
+
+Compress-Archive -Path func-package\* -DestinationPath lambda_function.zip -Force
 ```
 
-> If the zip exceeds 50 MB, use a [container image deployment](https://docs.aws.amazon.com/lambda/latest/dg/images-create.html) instead.
+> **No ECR needed.** Lambda supports up to 5 layers (250 MB unzipped each). This avoids container images entirely.
+>
+> If the layer still exceeds 250 MB unzipped, use a **Docker container image** deployed to Lambda directly via `aws lambda create-function --package-type Image`. Even in this case, you do NOT need ECR — use Lambda's built-in container image support with `docker save` + `aws lambda create-function --code ImageUri=...` from a local image. However the layer approach should work for this project's dependencies.
 
 ---
 
@@ -354,7 +374,7 @@ aws lambda create-function `
   --timeout 60 `
   --memory-size 2048 `
   --environment "Variables={MODEL_BUCKET=$MODEL_BUCKET,TESSERACT_CMD=/opt/bin/tesseract}" `
-  --layers $TESSERACT_LAYER_ARN `
+  --layers $TESSERACT_LAYER_ARN $ML_LAYER_ARN `
   --region $REGION
 
 # Wait for function to be active
@@ -553,11 +573,12 @@ Start-Process $CF_DOMAIN
 
 ### Update backend (Lambda)
 ```powershell
-# Rebuild package
-pip install fastapi scikit-learn xgboost pandas numpy joblib pillow pytesseract boto3 mangum -t package/
-Copy-Item main.py, csv_processor.py, handler.py package/
-Copy-Item model_loader_lambda.py package/model_loader.py
-Compress-Archive -Path package\* -DestinationPath lambda_function.zip -Force
+# Rebuild function code only (layers stay unchanged)
+mkdir func-package
+pip install fastapi pillow pytesseract boto3 mangum -t func-package/
+Copy-Item main.py, csv_processor.py, handler.py func-package/
+Copy-Item model_loader_lambda.py func-package/model_loader.py
+Compress-Archive -Path func-package\* -DestinationPath lambda_function.zip -Force
 
 aws lambda update-function-code `
   --function-name $APP_NAME-api `
